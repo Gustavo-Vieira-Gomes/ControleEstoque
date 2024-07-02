@@ -1,0 +1,5 @@
+.venv/
+rasc.py
+__pycache__/
+.env
+.streamlit/
