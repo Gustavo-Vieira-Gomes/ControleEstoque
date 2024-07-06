@@ -10,14 +10,13 @@ if not 'client_order' in st.session_state:
     st.session_state['client_order'] = {'COCA-COLA': 0, 'ÁGUA':0, 'GUARANÁ': 0, 'ICE TEA PÊSSEGO': 0,'ICE TEA LIMÃO': 0, 'SUCO': 0, 'CERVEJA': 0, 'GUARAVITA': 0}
 
 
-@st.cache_data
 def get_unit_values(_conn):
     with _conn.session as session:
         product_data =  session.query(Products).all()
         st.session_state['product_unit_value'] = {product.product_name:product.unit_value for product in product_data}
 
-get_unit_values(conn)
-
+if 'product_unit_value' in st.session_state:
+    get_unit_values(conn)
 
 def total_client_order():
     
