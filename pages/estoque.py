@@ -27,6 +27,7 @@ with st.expander(expanded=True, label='Produtos em Estoque'):
             st.write(product.product_name)
             st.write(f'Em estoque: {product.quantity} unidades')
             st.write(f'Unidades Vendidas: {total_sales_units}')
+            st.write(f'Valor Unitário: R${product.unit_value:.2f}'.replace('.', ','))
             st.write(f'Faturamento: R${total_sales_value:.2f}'.replace('.', ','))
 
 with st.expander(expanded=True, label='Registro de Vendas'):

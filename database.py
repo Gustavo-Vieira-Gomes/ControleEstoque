@@ -29,5 +29,3 @@ class Vendas(BaseClass):
 
 
 BaseClass.metadata.create_all(create_engine(st.secrets['connections']['postgres']['url']))
-
-

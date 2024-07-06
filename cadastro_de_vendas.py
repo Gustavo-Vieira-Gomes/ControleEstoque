@@ -9,6 +9,23 @@ conn = st.connection('postgres', type='sql')
 if not 'client_order' in st.session_state:
     st.session_state['client_order'] = {'COCA-COLA': 0, 'ÁGUA':0, 'GUARANÁ': 0, 'ICE TEA PÊSSEGO': 0,'ICE TEA LIMÃO': 0, 'SUCO': 0, 'CERVEJA': 0, 'GUARAVITA': 0}
 
+
+@st.cache_data
+def get_unit_values(_conn):
+    with _conn.session as session:
+        product_data =  session.query(Products).all()
+        st.session_state['product_unit_value'] = {product.product_name:product.unit_value for product in product_data}
+
+get_unit_values(conn)
+
+
+def total_client_order():
+    
+    total_order_value = 0
+    for item in st.session_state['product_unit_value'].items():
+        total_order_value += item[1] * st.session_state['client_order'][item[0]]
+    return total_order_value
+
 with st.container(border=True):
     st.header('Cadastrar Vendas')
 
@@ -94,18 +111,19 @@ with st.container(border=True):
     for item, quantity in st.session_state['client_order'].items():
         sumary_col.write(f'{item} - {quantity}')
 
+    total_order_value = total_client_order()
+    sumary_col.subheader(f'Total da Venda: R${total_order_value:.2f}'.replace('.', ','))
+
     confirm_button = sumary_col.button('Concluir venda')
 
     if confirm_button:
 
 
         with conn.session as session:
-            total_order_value = 0
+
             for item in st.session_state['client_order'].keys():
-                statement = select(Products).where(Products.product_name==item)
-                product_data = session.scalars(statement).first()
-                total_order_value += product_data.unit_value * st.session_state['client_order'][item]
                 if st.session_state['client_order'][item] != 0:
+                    product_data = session.query(Products).filter(Products.product_name == item).scalar()
                     statement2 = update(Products).where(Products.product_name == item).values(quantity=product_data.quantity-st.session_state['client_order'][item])
                     session.execute(statement2)
                     session.commit()
