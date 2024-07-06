@@ -15,7 +15,7 @@ def get_unit_values(_conn):
         product_data =  session.query(Products).all()
         st.session_state['product_unit_value'] = {product.product_name:product.unit_value for product in product_data}
 
-if 'product_unit_value' in st.session_state:
+if 'product_unit_value' not in st.session_state:
     get_unit_values(conn)
 
 def total_client_order():
